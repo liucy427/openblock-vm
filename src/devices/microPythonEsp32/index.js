@@ -27,16 +27,18 @@ const SERIAL_CONFIG = {
     baudRate: 57600,
     dataBits: 8,
     stopBits: 1,
-    rtscts: true
+    hupcl: false
 };
 
 /**
- * Configuration for arduino-cli. TODO:  replace
+ * Configuration for esptool
  * @readonly
  */
 const DIVECE_OPT = {
     type: 'microPython',
-    // fqbn: 'esp32:esp32:esp32'
+    chip: 'esp32',
+    baud: '460800',
+    firmware: 'esp32-20220117-v1.18.bin'
 };
 
 const Pins = {
