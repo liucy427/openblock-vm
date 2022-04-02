@@ -20,7 +20,8 @@ const PNPID_LIST = [
 const SERIAL_CONFIG = {
     baudRate: 115200,
     dataBits: 8,
-    stopBits: 1
+    stopBits: 1,
+    hupcl: false
 };
 
 /**
