@@ -11,12 +11,8 @@ const CommonPeripheral = require('../common/common-peripheral');
  * @readonly
  */
 const PNPID_LIST = [
-    // CH340
-    'USB\\VID_1A86&PID_7523',
-    // CH9102
-    'USB\\VID_1A86&PID_55D4',
-    // CP2102
-    'USB\\VID_10C4&PID_EA60'
+    // FTDI
+    'USB\\VID_0403&PID_6010'
 ];
 
 /**
@@ -36,9 +32,9 @@ const SERIAL_CONFIG = {
  */
 const DIVECE_OPT = {
     type: 'microPython',
-    chip: 'esp8266',
+    chip: 'k210',
     baud: '460800',
-    firmware: 'esp8266-20220117-v1.18.bin'
+    firmware: 'maixpy_v0.6.2_73_g1a4f278a5_amigo_ips_defaults.bin'
 };
 
 const Pins = {
@@ -164,7 +160,7 @@ class OpenBlockArduinoEsp8266Device {
      * @return {string} - the ID of this extension.
      */
     static get DEVICE_ID () {
-        return 'microPythonEsp8266';
+        return 'microPythonMaixAmigo';
     }
 
     get PINS_MENU () {
