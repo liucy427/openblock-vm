@@ -37,7 +37,7 @@ const SERIAL_CONFIG = {
 const DIVECE_OPT = {
     type: 'microPython',
     chip: 'esp8266',
-    baud: '460800',
+    baud: '921600',
     firmware: 'esp8266-20220117-v1.18.bin'
 };
 

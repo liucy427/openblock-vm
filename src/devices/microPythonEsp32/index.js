@@ -37,7 +37,7 @@ const SERIAL_CONFIG = {
 const DIVECE_OPT = {
     type: 'microPython',
     chip: 'esp32',
-    baud: '460800',
+    baud: '921600',
     firmware: 'esp32-20220117-v1.18.bin'
 };
 
@@ -85,7 +85,7 @@ const Voltage = {
     V33: 'ATTN_11DB',
     V22: 'ATTN_6DB',
     V15: 'ATTN_2_5_DB',
-    V12: 'ATTIN_0DB',
+    V12: 'ATTIN_0DB'
 };
 
 const SerialNo = {
@@ -282,7 +282,6 @@ class OpenBlockMicroPythonEsp32Device {
         ];
     }
 
-    
     get OUT_PINS_MENU () {
         return [
             {
@@ -399,7 +398,6 @@ class OpenBlockMicroPythonEsp32Device {
             }
         ];
     }
-
 
     get MODE_MENU () {
         return [

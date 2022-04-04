@@ -33,7 +33,7 @@ const SERIAL_CONFIG = {
 const DIVECE_OPT = {
     type: 'microPython',
     chip: 'k210',
-    baud: '460800',
+    baud: '921600',
     firmware: 'maixpy_v0.6.2_73_g1a4f278a5_amigo_ips_defaults.bin'
 };
 
