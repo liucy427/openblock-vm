@@ -827,7 +827,7 @@ class OpenBlockMicroPythonEsp32Device {
                             PIN: {
                                 type: ArgumentType.STRING,
                                 menu: 'outPins',
-                                defaultValue: Pins.IO0
+                                defaultValue: Pins.IO2
                             },
                             MODE: {
                                 type: ArgumentType.STRING,
@@ -848,7 +848,7 @@ class OpenBlockMicroPythonEsp32Device {
                             PIN: {
                                 type: ArgumentType.STRING,
                                 menu: 'outPins',
-                                defaultValue: Pins.IO0
+                                defaultValue: Pins.IO2
                             },
                             LEVEL: {
                                 type: ArgumentType.STRING,
@@ -869,7 +869,7 @@ class OpenBlockMicroPythonEsp32Device {
                             PIN: {
                                 type: ArgumentType.STRING,
                                 menu: 'outPins',
-                                defaultValue: Pins.IO0
+                                defaultValue: Pins.IO2
                             },
                             OUT: {
                                 type: ArgumentType.UINT10_NUMBER,
@@ -910,7 +910,7 @@ class OpenBlockMicroPythonEsp32Device {
                             PIN: {
                                 type: ArgumentType.STRING,
                                 menu: 'pins',
-                                defaultValue: Pins.IO0
+                                defaultValue: Pins.IO2
                             }
                         }
                     },
@@ -926,7 +926,7 @@ class OpenBlockMicroPythonEsp32Device {
                             PIN: {
                                 type: ArgumentType.STRING,
                                 menu: 'adcPins',
-                                defaultValue: Pins.IO0
+                                defaultValue: Pins.IO2
                             }
                         }
                     },
@@ -942,7 +942,7 @@ class OpenBlockMicroPythonEsp32Device {
                             PIN: {
                                 type: ArgumentType.STRING,
                                 menu: 'touchPins',
-                                defaultValue: Pins.IO0
+                                defaultValue: Pins.IO2
                             }
                         }
                     },
@@ -959,7 +959,7 @@ class OpenBlockMicroPythonEsp32Device {
                             PIN: {
                                 type: ArgumentType.STRING,
                                 menu: 'outPins',
-                                defaultValue: Pins.IO0
+                                defaultValue: Pins.IO2
                             },
                             OUT: {
                                 type: ArgumentType.ANGLE,
@@ -981,7 +981,7 @@ class OpenBlockMicroPythonEsp32Device {
                             PIN: {
                                 type: ArgumentType.STRING,
                                 menu: 'pins',
-                                defaultValue: Pins.IO0
+                                defaultValue: Pins.IO2
                             },
                             MODE: {
                                 type: ArgumentType.STRING,
