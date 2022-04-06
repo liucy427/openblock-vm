@@ -151,18 +151,20 @@ class OpenBlockMicroPythonEsp32Device {
                 text: 'IO0',
                 value: Pins.IO0
             },
-            {
-                text: 'IO1',
-                value: Pins.IO1
-            },
+            // Used by REPL port
+            // {
+            //     text: 'IO1',
+            //     value: Pins.IO1
+            // },
             {
                 text: 'IO2',
                 value: Pins.IO2
             },
-            {
-                text: 'IO3',
-                value: Pins.IO3
-            },
+            // Used by REPL port
+            // {
+            //     text: 'IO3',
+            //     value: Pins.IO3
+            // },
             {
                 text: 'IO4',
                 value: Pins.IO4
@@ -285,18 +287,20 @@ class OpenBlockMicroPythonEsp32Device {
                 text: 'IO0',
                 value: Pins.IO0
             },
-            {
-                text: 'IO1',
-                value: Pins.IO1
-            },
+            // Used by REPL port
+            // {
+            //     text: 'IO1',
+            //     value: Pins.IO1
+            // },
             {
                 text: 'IO2',
                 value: Pins.IO2
             },
-            {
-                text: 'IO3',
-                value: Pins.IO3
-            },
+            // Used by REPL port
+            // {
+            //     text: 'IO3',
+            //     value: Pins.IO3
+            // },
             {
                 text: 'IO4',
                 value: Pins.IO4
@@ -434,129 +438,49 @@ class OpenBlockMicroPythonEsp32Device {
         ];
     }
 
-    get PWM_PINS_MENU () {
-        return [
-            {
-                text: 'IO0',
-                value: Pins.IO0
-            },
-            {
-                text: 'IO2',
-                value: Pins.IO2
-            },
-            {
-                text: 'IO4',
-                value: Pins.IO4
-            },
-            {
-                text: 'IO5',
-                value: Pins.IO5
-            },
-            {
-                text: 'IO12',
-                value: Pins.IO12
-            },
-            {
-                text: 'IO13',
-                value: Pins.IO13
-            },
-            {
-                text: 'IO14',
-                value: Pins.IO14
-            },
-            {
-                text: 'IO15',
-                value: Pins.IO15
-            },
-            {
-                text: 'IO16',
-                value: Pins.IO16
-            },
-            {
-                text: 'IO17',
-                value: Pins.IO17
-            },
-            {
-                text: 'IO18',
-                value: Pins.IO18
-            },
-            {
-                text: 'IO19',
-                value: Pins.IO19
-            },
-            {
-                text: 'IO21',
-                value: Pins.IO21
-            },
-            {
-                text: 'IO22',
-                value: Pins.IO22
-            },
-            {
-                text: 'IO23',
-                value: Pins.IO23
-            },
-            {
-                text: 'IO25',
-                value: Pins.IO25
-            },
-            {
-                text: 'IO26',
-                value: Pins.IO26
-            },
-            {
-                text: 'IO27',
-                value: Pins.IO27
-            },
-            {
-                text: 'IO32',
-                value: Pins.IO32
-            }
-        ];
-    }
-
     get ANALOG_PINS_MENU () {
         return [
-            {
-                text: 'IO0',
-                value: Pins.IO0
-            },
-            {
-                text: 'IO2',
-                value: Pins.IO2
-            },
-            {
-                text: 'IO4',
-                value: Pins.IO4
-            },
-            {
-                text: 'IO12',
-                value: Pins.IO12
-            },
-            {
-                text: 'IO13',
-                value: Pins.IO13
-            },
-            {
-                text: 'IO14',
-                value: Pins.IO14
-            },
-            {
-                text: 'IO15',
-                value: Pins.IO15
-            },
-            {
-                text: 'IO25',
-                value: Pins.IO25
-            },
-            {
-                text: 'IO26',
-                value: Pins.IO26
-            },
-            {
-                text: 'IO27',
-                value: Pins.IO27
-            },
+            // Since wifi is enabled by default, none of the pins of ADC block 2 can use the ADC function
+            // {
+            //     text: 'IO0',
+            //     value: Pins.IO0
+            // },
+            // {
+            //     text: 'IO2',
+            //     value: Pins.IO2
+            // },
+            // {
+            //     text: 'IO4',
+            //     value: Pins.IO4
+            // },
+            // {
+            //     text: 'IO12',
+            //     value: Pins.IO12
+            // },
+            // {
+            //     text: 'IO13',
+            //     value: Pins.IO13
+            // },
+            // {
+            //     text: 'IO14',
+            //     value: Pins.IO14
+            // },
+            // {
+            //     text: 'IO15',
+            //     value: Pins.IO15
+            // },
+            // {
+            //     text: 'IO25',
+            //     value: Pins.IO25
+            // },
+            // {
+            //     text: 'IO26',
+            //     value: Pins.IO26
+            // },
+            // {
+            //     text: 'IO27',
+            //     value: Pins.IO27
+            // },
             {
                 text: 'IO32',
                 value: Pins.IO32
@@ -925,7 +849,7 @@ class OpenBlockMicroPythonEsp32Device {
                         arguments: {
                             PIN: {
                                 type: ArgumentType.STRING,
-                                menu: 'adcPins',
+                                menu: 'analogPins',
                                 defaultValue: Pins.IO2
                             }
                         }
@@ -1002,9 +926,6 @@ class OpenBlockMicroPythonEsp32Device {
                     mode: {
                         items: this.MODE_MENU
                     },
-                    pwmPins: {
-                        items: this.PWM_PINS_MENU
-                    },
                     level: {
                         acceptReporters: true,
                         items: this.LEVEL_MENU
@@ -1012,7 +933,7 @@ class OpenBlockMicroPythonEsp32Device {
                     dacPins: {
                         items: this.DAC_PINS_MENU
                     },
-                    adcPins: {
+                    analogPins: {
                         items: this.ANALOG_PINS_MENU
                     },
                     touchPins: {
