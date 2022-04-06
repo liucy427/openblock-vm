@@ -81,14 +81,8 @@ const Level = {
     Low: '0'
 };
 
-const Voltage = {
-    V33: 'ATTN_11DB',
-    V22: 'ATTN_6DB',
-    V15: 'ATTN_2_5_DB',
-    V12: 'ATTIN_0DB'
-};
-
 const SerialNo = {
+    Serial0: '0',
     Serial1: '1',
     Serial2: '2'
 };
@@ -118,9 +112,11 @@ const Mode = {
 };
 
 const InterrupMode = {
-    Rising: '1',
-    Falling: '2',
-    Change: '3'
+    Rising: 'RISING',
+    Falling: 'FALLING',
+    Change: 'CHANGE',
+    LowLevel: 'LOW_LEVEL',
+    HighLevel: 'HIGH_LEVEL'
 };
 
 /**
@@ -175,30 +171,31 @@ class OpenBlockMicroPythonEsp32Device {
                 text: 'IO5',
                 value: Pins.IO5
             },
-            {
-                text: 'IO6',
-                value: Pins.IO6
-            },
-            {
-                text: 'IO7',
-                value: Pins.IO7
-            },
-            {
-                text: 'IO8',
-                value: Pins.IO8
-            },
-            {
-                text: 'IO9',
-                value: Pins.IO9
-            },
-            {
-                text: 'IO10',
-                value: Pins.IO10
-            },
-            {
-                text: 'IO11',
-                value: Pins.IO11
-            },
+            // Pins 6 to 11 are used by the ESP32 Flash, not recommended for general use.
+            // {
+            //     text: 'IO6',
+            //     value: Pins.IO6
+            // },
+            // {
+            //     text: 'IO7',
+            //     value: Pins.IO7
+            // },
+            // {
+            //     text: 'IO8',
+            //     value: Pins.IO8
+            // },
+            // {
+            //     text: 'IO9',
+            //     value: Pins.IO9
+            // },
+            // {
+            //     text: 'IO10',
+            //     value: Pins.IO10
+            // },
+            // {
+            //     text: 'IO11',
+            //     value: Pins.IO11
+            // },
             {
                 text: 'IO12',
                 value: Pins.IO12
@@ -308,30 +305,31 @@ class OpenBlockMicroPythonEsp32Device {
                 text: 'IO5',
                 value: Pins.IO5
             },
-            {
-                text: 'IO6',
-                value: Pins.IO6
-            },
-            {
-                text: 'IO7',
-                value: Pins.IO7
-            },
-            {
-                text: 'IO8',
-                value: Pins.IO8
-            },
-            {
-                text: 'IO9',
-                value: Pins.IO9
-            },
-            {
-                text: 'IO10',
-                value: Pins.IO10
-            },
-            {
-                text: 'IO11',
-                value: Pins.IO11
-            },
+            // Pins 6 to 11 are used by the ESP32 Flash, not recommended for general use.
+            // {
+            //     text: 'IO6',
+            //     value: Pins.IO6
+            // },
+            // {
+            //     text: 'IO7',
+            //     value: Pins.IO7
+            // },
+            // {
+            //     text: 'IO8',
+            //     value: Pins.IO8
+            // },
+            // {
+            //     text: 'IO9',
+            //     value: Pins.IO9
+            // },
+            // {
+            //     text: 'IO10',
+            //     value: Pins.IO10
+            // },
+            // {
+            //     text: 'IO11',
+            //     value: Pins.IO11
+            // },
             {
                 text: 'IO12',
                 value: Pins.IO12
@@ -420,7 +418,7 @@ class OpenBlockMicroPythonEsp32Device {
             {
                 text: formatMessage({
                     id: 'microPythonEsp32.modeMenu.inputPullup',
-                    default: 'input pull up',
+                    default: 'input-pullup',
                     description: 'label for input-pullup pin mode'
                 }),
                 value: Mode.InputPullup
@@ -428,7 +426,7 @@ class OpenBlockMicroPythonEsp32Device {
             {
                 text: formatMessage({
                     id: 'microPythonEsp32.modeMenu.inputPulldown',
-                    default: 'input pull down',
+                    default: 'input-pulldown',
                     description: 'label for input-pulldown pin mode'
                 }),
                 value: Mode.InputPulldown
@@ -586,39 +584,6 @@ class OpenBlockMicroPythonEsp32Device {
         ];
     }
 
-    get VOLTAGE_MENU () {
-        return [
-            {
-                text: formatMessage({
-                    id: 'microPythonEsp32.voltageMenu.v33',
-                    default: '3.3V'
-                }),
-                value: Voltage.V33
-            },
-            {
-                text: formatMessage({
-                    id: 'microPythonEsp32.voltageMenu.v22',
-                    default: '2.2V'
-                }),
-                value: Voltage.V22
-            },
-            {
-                text: formatMessage({
-                    id: 'microPythonEsp32.voltageMenu.v15',
-                    default: '1.5V'
-                }),
-                value: Voltage.V15
-            },
-            {
-                text: formatMessage({
-                    id: 'microPythonEsp32.voltageMenu.v12',
-                    default: '1.2V'
-                }),
-                value: Voltage.V12
-            }
-        ];
-    }
-
     get LEVEL_MENU () {
         return [
             {
@@ -649,35 +614,6 @@ class OpenBlockMicroPythonEsp32Device {
             {
                 text: 'IO26',
                 value: Pins.IO26
-            }
-        ];
-    }
-
-    get ADC_PINS_MENU () {
-        return [
-            {
-                text: 'ADC32',
-                value: Pins.IO32
-            },
-            {
-                text: 'ADC33',
-                value: Pins.IO33
-            },
-            {
-                text: 'ADC34',
-                value: Pins.IO34
-            },
-            {
-                text: 'ADC35',
-                value: Pins.IO35
-            },
-            {
-                text: 'ADC36',
-                value: Pins.IO36
-            },
-            {
-                text: 'ADC39',
-                value: Pins.IO39
             }
         ];
     }
@@ -752,18 +688,40 @@ class OpenBlockMicroPythonEsp32Device {
                     description: 'label for change edge interrup'
                 }),
                 value: InterrupMode.Change
+            },
+            {
+                text: formatMessage({
+                    id: 'microPythonEsp32.InterrupModeMenu.low',
+                    default: 'low level',
+                    description: 'label for low level interrup'
+                }),
+                value: InterrupMode.LowLevel
+            },
+            {
+                text: formatMessage({
+                    id: 'microPythonEsp32.InterrupModeMenu.high',
+                    default: 'high level',
+                    description: 'label for high level interrup'
+                }),
+                value: InterrupMode.HighLevel
             }
         ];
     }
 
     get SERIAL_NO_MENU () {
         return [
+            // Used by REPL
+            // {
+            //     text: '0',
+            //     value: SerialNo.Serial0
+            // },
+            // Usually IO9/10 is reserved for flash chip.
+            // {
+            //     text: '1',
+            //     value: SerialNo.Serial1
+            // },
             {
-                text: 'uart1',
-                value: SerialNo.Serial1
-            },
-            {
-                text: 'uart2',
+                text: '2',
                 value: SerialNo.Serial2
             }
         ];
@@ -911,31 +869,11 @@ class OpenBlockMicroPythonEsp32Device {
                             PIN: {
                                 type: ArgumentType.STRING,
                                 menu: 'outPins',
-                                defaultValue: Pins.IO4
+                                defaultValue: Pins.IO0
                             },
                             OUT: {
-                                type: ArgumentType.NUMBER,
+                                type: ArgumentType.UINT10_NUMBER,
                                 defaultValue: '0'
-                            }
-                        }
-                    },
-                    {
-                        opcode: 'esp32SetPwmFrequency',
-                        text: formatMessage({
-                            id: 'microPythonEsp32.pins.esp32SetPwmFrequency',
-                            default: 'set pwm pin [PIN] frequency [FREQ]',
-                            description: 'microPythonEsp32 set pwm pin out'
-                        }),
-                        blockType: BlockType.COMMAND,
-                        arguments: {
-                            PIN: {
-                                type: ArgumentType.STRING,
-                                menu: 'outPins',
-                                defaultValue: Pins.IO4
-                            },
-                            FREQ: {
-                                type: ArgumentType.NUMBER,
-                                defaultValue: '2000'
                             }
                         }
                     },
@@ -954,29 +892,8 @@ class OpenBlockMicroPythonEsp32Device {
                                 defaultValue: Pins.IO25
                             },
                             OUT: {
-                                type: ArgumentType.NUMBER,
+                                type: ArgumentType.UINT8_NUMBER,
                                 defaultValue: '0'
-                            }
-                        }
-                    },
-                    {
-                        opcode: 'esp32SetAnalogVoltage',
-                        text: formatMessage({
-                            id: 'microPythonEsp32.pins.esp32SetAnalogVoltage',
-                            default: 'set analog pin [PIN] reference voltage [VOLTAGE]',
-                            description: 'microPythonEsp32 set analog pin reference voltage'
-                        }),
-                        blockType: BlockType.COMMAND,
-                        arguments: {
-                            PIN: {
-                                type: ArgumentType.STRING,
-                                menu: 'adcPins',
-                                defaultValue: Pins.IO32
-                            },
-                            VOLTAGE: {
-                                type: ArgumentType.STRING,
-                                menu: 'voltage',
-                                defaultValue: Voltage.V33
                             }
                         }
                     },
@@ -993,7 +910,7 @@ class OpenBlockMicroPythonEsp32Device {
                             PIN: {
                                 type: ArgumentType.STRING,
                                 menu: 'pins',
-                                defaultValue: Pins.IO2
+                                defaultValue: Pins.IO0
                             }
                         }
                     },
@@ -1009,7 +926,7 @@ class OpenBlockMicroPythonEsp32Device {
                             PIN: {
                                 type: ArgumentType.STRING,
                                 menu: 'adcPins',
-                                defaultValue: Pins.IO32
+                                defaultValue: Pins.IO0
                             }
                         }
                     },
@@ -1025,7 +942,7 @@ class OpenBlockMicroPythonEsp32Device {
                             PIN: {
                                 type: ArgumentType.STRING,
                                 menu: 'touchPins',
-                                defaultValue: Pins.IO2
+                                defaultValue: Pins.IO0
                             }
                         }
                     },
@@ -1042,11 +959,11 @@ class OpenBlockMicroPythonEsp32Device {
                             PIN: {
                                 type: ArgumentType.STRING,
                                 menu: 'outPins',
-                                defaultValue: Pins.IO2
+                                defaultValue: Pins.IO0
                             },
                             OUT: {
                                 type: ArgumentType.ANGLE,
-                                defaultValue: '0'
+                                defaultValue: '90'
                             }
                         }
                     },
@@ -1064,7 +981,7 @@ class OpenBlockMicroPythonEsp32Device {
                             PIN: {
                                 type: ArgumentType.STRING,
                                 menu: 'pins',
-                                defaultValue: Pins.IO2
+                                defaultValue: Pins.IO0
                             },
                             MODE: {
                                 type: ArgumentType.STRING,
@@ -1088,9 +1005,6 @@ class OpenBlockMicroPythonEsp32Device {
                     pwmPins: {
                         items: this.PWM_PINS_MENU
                     },
-                    voltage: {
-                        items: this.VOLTAGE_MENU
-                    },
                     level: {
                         acceptReporters: true,
                         items: this.LEVEL_MENU
@@ -1099,7 +1013,7 @@ class OpenBlockMicroPythonEsp32Device {
                         items: this.DAC_PINS_MENU
                     },
                     adcPins: {
-                        items: this.ADC_PINS_MENU
+                        items: this.ANALOG_PINS_MENU
                     },
                     touchPins: {
                         items: this.TOUCH_PINS_MENU
@@ -1133,7 +1047,7 @@ class OpenBlockMicroPythonEsp32Device {
                             NO: {
                                 type: ArgumentType.NUMBER,
                                 menu: 'serialNo',
-                                defaultValue: SerialNo.Serial1
+                                defaultValue: SerialNo.Serial2
                             },
                             VALUE: {
                                 type: ArgumentType.STRING,
@@ -1155,7 +1069,7 @@ class OpenBlockMicroPythonEsp32Device {
                             NO: {
                                 type: ArgumentType.NUMBER,
                                 menu: 'serialNo',
-                                defaultValue: SerialNo.Serial1
+                                defaultValue: SerialNo.Serial2
                             },
                             VALUE: {
                                 type: ArgumentType.STRING,
@@ -1180,7 +1094,7 @@ class OpenBlockMicroPythonEsp32Device {
                             NO: {
                                 type: ArgumentType.NUMBER,
                                 menu: 'serialNo',
-                                defaultValue: SerialNo.Serial1
+                                defaultValue: SerialNo.Serial2
                             }
                         },
                         blockType: BlockType.BOOLEAN,
@@ -1197,7 +1111,7 @@ class OpenBlockMicroPythonEsp32Device {
                             NO: {
                                 type: ArgumentType.NUMBER,
                                 menu: 'serialNo',
-                                defaultValue: SerialNo.Serial1
+                                defaultValue: SerialNo.Serial2
                             }
                         },
                         blockType: BlockType.REPORTER,
@@ -1214,7 +1128,7 @@ class OpenBlockMicroPythonEsp32Device {
                             NO: {
                                 type: ArgumentType.NUMBER,
                                 menu: 'serialNo',
-                                defaultValue: SerialNo.Serial1
+                                defaultValue: SerialNo.Serial2
                             }
                         },
                         blockType: BlockType.REPORTER,
@@ -1232,6 +1146,36 @@ class OpenBlockMicroPythonEsp32Device {
                         items: this.EOL_MENU
                     }
                 }
+            },
+            {
+                id: 'console',
+                name: formatMessage({
+                    id: 'microPythonEsp32.category.console',
+                    default: 'Console',
+                    description: 'The name of the esp32 microPython device console category'
+                }),
+                color1: '#FF3399',
+                color2: '#FF3399',
+                color3: '#FF3399',
+
+                blocks: [
+                    {
+                        opcode: 'consolePrint',
+                        text: formatMessage({
+                            id: 'microPythonEsp32.console.consolePrint',
+                            default: 'print [TEXT]',
+                            description: 'MicrpPython console print'
+                        }),
+                        blockType: BlockType.COMMAND,
+                        arguments: {
+                            TEXT: {
+                                type: ArgumentType.STRING,
+                                defaultValue: 'Hello OpenBlock'
+                            }
+                        }
+                    }
+                ],
+                menus: { }
             }
         ];
     }
@@ -1267,32 +1211,12 @@ class OpenBlockMicroPythonEsp32Device {
     }
 
     /**
-     * Set pin pwm out frequency.
-     * @param {object} args - the block's arguments.
-     * @return {Promise} - a Promise that resolves after the set pin pwm out frequency is done.
-     */
-    esp32SetPwmFrequency (args) {
-        this._peripheral.esp32SetPwmFrequency(args.PIN, args.OUT);
-        return Promise.resolve();
-    }
-
-    /**
      * Set dac pin out value.
      * @param {object} args - the block's arguments.
      * @return {Promise} - a Promise that resolves after the set dac pin out value is done.
      */
     esp32SetDACOutput (args) {
         this._peripheral.esp32SetDACOutput(args.PIN, args.OUT);
-        return Promise.resolve();
-    }
-
-    /**
-     * Set analog pin reference voltage.
-     * @param {object} args - the block's arguments.
-     * @return {Promise} - a Promise that resolves after the set analog pin reference voltage is done.
-     */
-    esp32SetAnalogVoltage (args) {
-        this._peripheral.esp32SetAnalogVoltage(args.PIN, args.OUT);
         return Promise.resolve();
     }
 
