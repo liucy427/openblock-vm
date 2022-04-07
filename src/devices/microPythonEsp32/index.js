@@ -81,24 +81,6 @@ const Level = {
     Low: '0'
 };
 
-const SerialNo = {
-    Serial0: '0',
-    Serial1: '1',
-    Serial2: '2'
-};
-
-const Buadrate = {
-    B1200: '1200',
-    B2300: '2400',
-    B4800: '4800',
-    B9600: '9600',
-    B19200: '19200',
-    B38400: '38400',
-    B57600: '57600',
-    B76800: '76800',
-    B115200: '115200'
-};
-
 const Eol = {
     Warp: 'warp',
     NoWarp: 'noWarp'
@@ -632,58 +614,6 @@ class OpenBlockMicroPythonEsp32Device {
         ];
     }
 
-    get SERIAL_NO_MENU () {
-        return [
-            // Used by REPL
-            // {
-            //     text: '0',
-            //     value: SerialNo.Serial0
-            // },
-            // Usually IO9/10 is reserved for flash chip.
-            // {
-            //     text: '1',
-            //     value: SerialNo.Serial1
-            // },
-            {
-                text: '2',
-                value: SerialNo.Serial2
-            }
-        ];
-    }
-
-    get BAUDTATE_MENU () {
-        return [
-            {
-                text: '4800',
-                value: Buadrate.B4800
-            },
-            {
-                text: '9600',
-                value: Buadrate.B9600
-            },
-            {
-                text: '19200',
-                value: Buadrate.B19200
-            },
-            {
-                text: '38400',
-                value: Buadrate.B38400
-            },
-            {
-                text: '57600',
-                value: Buadrate.B57600
-            },
-            {
-                text: '76800',
-                value: Buadrate.B76800
-            },
-            {
-                text: '115200',
-                value: Buadrate.B115200
-            }
-        ];
-    }
-
     get EOL_MENU () {
         return [
             {
@@ -945,54 +875,27 @@ class OpenBlockMicroPythonEsp32Device {
                 }
             },
             {
-                id: 'serial',
+                id: 'console',
                 name: formatMessage({
-                    id: 'microPythonEsp32.category.serial',
-                    default: 'Serial',
-                    description: 'The name of the microPython esp32 device serial category'
+                    id: 'microPythonEsp32.category.console',
+                    default: 'Console',
+                    description: 'The name of the esp32 microPython device console category'
                 }),
-                color1: '#9966FF',
-                color2: '#774DCB',
-                color3: '#774DCB',
+                color1: '#FF3399',
+                color2: '#CC297A',
+                color3: '#CC297A',
 
                 blocks: [
                     {
-                        opcode: 'esp32SerialBegin',
+                        opcode: 'consolePrint',
                         text: formatMessage({
-                            id: 'microPythonEsp32.serial.esp32SerialBegin',
-                            default: 'serial [NO] begin baudrate [VALUE]',
-                            description: 'microPythonEsp32 multi serial begin'
+                            id: 'microPythonEsp32.console.consolePrint',
+                            default: 'print [TEXT] [EOL]',
+                            description: 'MicrpPython console print'
                         }),
                         blockType: BlockType.COMMAND,
                         arguments: {
-                            NO: {
-                                type: ArgumentType.NUMBER,
-                                menu: 'serialNo',
-                                defaultValue: SerialNo.Serial2
-                            },
-                            VALUE: {
-                                type: ArgumentType.STRING,
-                                menu: 'baudrate',
-                                defaultValue: Buadrate.B115200
-                            }
-                        },
-                        programMode: [ProgramModeType.UPLOAD]
-                    },
-                    {
-                        opcode: 'esp32SerialPrint',
-                        text: formatMessage({
-                            id: 'microPythonEsp32.serial.esp32SerialPrint',
-                            default: 'serial [NO] print [VALUE] [EOL]',
-                            description: 'microPythonEsp32 multi serial print'
-                        }),
-                        blockType: BlockType.COMMAND,
-                        arguments: {
-                            NO: {
-                                type: ArgumentType.NUMBER,
-                                menu: 'serialNo',
-                                defaultValue: SerialNo.Serial2
-                            },
-                            VALUE: {
+                            TEXT: {
                                 type: ArgumentType.STRING,
                                 defaultValue: 'Hello OpenBlock'
                             },
@@ -1005,98 +908,27 @@ class OpenBlockMicroPythonEsp32Device {
                         programMode: [ProgramModeType.UPLOAD]
                     },
                     {
-                        opcode: 'esp32SerialAvailable',
+                        opcode: 'consoleInput',
                         text: formatMessage({
-                            id: 'microPythonEsp32.serial.esp32SerialAvailable',
-                            default: 'serial [NO]  is available?',
-                            description: 'microPythonEsp32 multi serial available data length'
+                            id: 'microPythonEsp32.console.consoleInput',
+                            default: 'prompt [TEXT] and read input',
+                            description: 'MicrpPython console input'
                         }),
-                        arguments: {
-                            NO: {
-                                type: ArgumentType.NUMBER,
-                                menu: 'serialNo',
-                                defaultValue: SerialNo.Serial2
-                            }
-                        },
-                        blockType: BlockType.BOOLEAN,
-                        programMode: [ProgramModeType.UPLOAD]
-                    },
-                    {
-                        opcode: 'esp32SerialReadString',
-                        text: formatMessage({
-                            id: 'microPythonEsp32.serial.esp32SerialReadString',
-                            default: 'serial [NO] read string',
-                            description: 'microPythonEsp32 multi serial read string'
-                        }),
-                        arguments: {
-                            NO: {
-                                type: ArgumentType.NUMBER,
-                                menu: 'serialNo',
-                                defaultValue: SerialNo.Serial2
-                            }
-                        },
                         blockType: BlockType.REPORTER,
-                        programMode: [ProgramModeType.UPLOAD]
-                    },
-                    {
-                        opcode: 'esp32SerialReadARow',
-                        text: formatMessage({
-                            id: 'microPythonEsp32.serial.esp32SerialReadARow',
-                            default: 'serial [NO] read a row',
-                            description: 'microPythonEsp32 multi serial read a row'
-                        }),
                         arguments: {
-                            NO: {
-                                type: ArgumentType.NUMBER,
-                                menu: 'serialNo',
-                                defaultValue: SerialNo.Serial2
+                            TEXT: {
+                                type: ArgumentType.STRING,
+                                defaultValue: 'Input a number:'
                             }
                         },
-                        blockType: BlockType.REPORTER,
                         programMode: [ProgramModeType.UPLOAD]
                     }
                 ],
                 menus: {
-                    baudrate: {
-                        items: this.BAUDTATE_MENU
-                    },
-                    serialNo: {
-                        items: this.SERIAL_NO_MENU
-                    },
                     eol: {
                         items: this.EOL_MENU
                     }
                 }
-            },
-            {
-                id: 'console',
-                name: formatMessage({
-                    id: 'microPythonEsp32.category.console',
-                    default: 'Console',
-                    description: 'The name of the esp32 microPython device console category'
-                }),
-                color1: '#FF3399',
-                color2: '#FF3399',
-                color3: '#FF3399',
-
-                blocks: [
-                    {
-                        opcode: 'consolePrint',
-                        text: formatMessage({
-                            id: 'microPythonEsp32.console.consolePrint',
-                            default: 'print [TEXT]',
-                            description: 'MicrpPython console print'
-                        }),
-                        blockType: BlockType.COMMAND,
-                        arguments: {
-                            TEXT: {
-                                type: ArgumentType.STRING,
-                                defaultValue: 'Hello OpenBlock'
-                            }
-                        }
-                    }
-                ],
-                menus: { }
             }
         ];
     }
