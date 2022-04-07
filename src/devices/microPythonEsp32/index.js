@@ -802,27 +802,6 @@ class OpenBlockMicroPythonEsp32Device {
                     },
                     '---',
                     {
-                        opcode: 'esp32SetServoOutput',
-                        text: formatMessage({
-                            id: 'microPythonEsp32.pins.setServoOutput',
-                            default: 'set servo pin [PIN] out [OUT]',
-                            description: 'microPythonEsp32 set servo pin out'
-                        }),
-                        blockType: BlockType.COMMAND,
-                        arguments: {
-                            PIN: {
-                                type: ArgumentType.STRING,
-                                menu: 'outPins',
-                                defaultValue: Pins.IO2
-                            },
-                            OUT: {
-                                type: ArgumentType.ANGLE,
-                                defaultValue: '90'
-                            }
-                        }
-                    },
-                    '---',
-                    {
 
                         opcode: 'esp32AttachInterrupt',
                         text: formatMessage({
@@ -998,16 +977,6 @@ class OpenBlockMicroPythonEsp32Device {
      */
     esp32ReadTouchPin (args) {
         return this._peripheral.esp32ReadTouchPin(args.PIN);
-    }
-
-    /**
-     * Set servo out put.
-     * @param {object} args - the block's arguments.
-     * @return {Promise} - a Promise that resolves after the set servo out value is done.
-     */
-    esp32SetServoOutput (args) {
-        this._peripheral.esp32SetServoOutput(args.PIN, args.OUT);
-        return Promise.resolve();
     }
 }
 
