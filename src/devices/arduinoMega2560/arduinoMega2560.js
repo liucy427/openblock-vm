@@ -4,19 +4,22 @@ const ArgumentType = require('../../extension-support/argument-type');
 const BlockType = require('../../extension-support/block-type');
 const ProgramModeType = require('../../extension-support/program-mode-type');
 
-const EspPeripheral = require('../arduinoCommon/esp-peripheral');
+const ArduinoPeripheral = require('../common/arduino-peripheral');
 
 /**
  * The list of USB device filters.
  * @readonly
  */
 const PNPID_LIST = [
-    // CH340
-    'USB\\VID_1A86&PID_7523',
-    // CH9102
-    'USB\\VID_1A86&PID_55D4',
-    // CP2102
-    'USB\\VID_10C4&PID_EA60'
+    // https://github.com/arduino/Arduino/blob/1.8.0/hardware/arduino/avr/boards.txt#L175-L186
+    'USB\\VID_2341&PID_0010',
+    'USB\\VID_2341&PID_0042',
+    'USB\\VID_2A03&PID_0010',
+    'USB\\VID_2A03&PID_0042',
+    'USB\\VID_2341&PID_0210',
+    'USB\\VID_2341&PID_0242',
+    // For chinese clones that use CH340
+    'USB\\VID_1A86&PID_7523'
 ];
 
 /**
@@ -26,8 +29,7 @@ const PNPID_LIST = [
 const SERIAL_CONFIG = {
     baudRate: 57600,
     dataBits: 8,
-    stopBits: 1,
-    rtscts: true
+    stopBits: 1
 };
 
 /**
@@ -36,72 +38,87 @@ const SERIAL_CONFIG = {
  */
 const DIVECE_OPT = {
     type: 'arduino',
-    fqbn: 'esp32:esp32:esp32'
+    fqbn: 'arduino:avr:mega:cpu=atmega2560',
+    firmware: 'arduinoMega2560.standardFirmata.ino.hex'
 };
 
 const Pins = {
-    IO0: '0',
-    IO1: '1',
-    IO2: '2',
-    IO3: '3',
-    IO4: '4',
-    IO5: '5',
-    IO6: '6',
-    IO7: '7',
-    IO8: '8',
-    IO9: '9',
-    IO10: '10',
-    IO11: '11',
-    IO12: '12',
-    IO13: '13',
-    IO14: '14',
-    IO15: '15',
-    IO16: '16',
-    IO17: '17',
-    IO18: '18',
-    IO19: '19',
-    IO21: '21',
-    IO22: '22',
-    IO23: '23',
-    IO25: '25',
-    IO26: '26',
-    IO27: '27',
-    IO32: '32',
-    IO33: '33',
-    IO34: '34',
-    IO35: '35',
-    IO36: '36',
-    IO39: '39'
+    D0: '0',
+    D1: '1',
+    D2: '2',
+    D3: '3',
+    D4: '4',
+    D5: '5',
+    D6: '6',
+    D7: '7',
+    D8: '8',
+    D9: '9',
+    D10: '10',
+    D11: '11',
+    D12: '12',
+    D13: '13',
+    D14: '14',
+    D15: '15',
+    D16: '16',
+    D17: '17',
+    D18: '18',
+    D19: '19',
+    D20: '20',
+    D21: '21',
+    D22: '22',
+    D23: '23',
+    D24: '24',
+    D25: '25',
+    D26: '26',
+    D27: '27',
+    D28: '28',
+    D29: '29',
+    D30: '30',
+    D31: '31',
+    D32: '32',
+    D33: '33',
+    D34: '34',
+    D35: '35',
+    D36: '36',
+    D37: '37',
+    D38: '38',
+    D39: '39',
+    D40: '40',
+    D41: '41',
+    D42: '42',
+    D43: '43',
+    D44: '44',
+    D45: '45',
+    D46: '46',
+    D47: '47',
+    D48: '48',
+    D49: '49',
+    D50: '50',
+    D51: '51',
+    D52: '52',
+    D53: '53',
+    A0: 'A0',
+    A1: 'A1',
+    A2: 'A2',
+    A3: 'A3',
+    A4: 'A4',
+    A5: 'A5',
+    A6: 'A6',
+    A7: 'A7',
+    A8: 'A8',
+    A9: 'A9',
+    A10: 'A10',
+    A11: 'A11',
+    A12: 'A12',
+    A13: 'A13',
+    A14: 'A14',
+    A15: 'A15'
 };
+
 
 const Level = {
     High: 'HIGH',
     Low: 'LOW'
-};
-
-const Channels = {
-    CH0: '0',
-    CH1: '1',
-    CH2: '2',
-    CH3: '3',
-    CH4: '4',
-    CH5: '5',
-    CH6: '6',
-    CH7: '7',
-    CH8: '8',
-    CH9: '9',
-    CH10: '10',
-    CH11: '11',
-    CH12: '12',
-    CH13: '13',
-    CH14: '14',
-    CH15: '15'
-};
-
-const SerialNo = {
-    Serial0: '0',
-    Serial1: '1',
-    Serial2: '2'
 };
 
 const Buadrate = {
@@ -119,6 +136,13 @@ const Eol = {
     NoWarp: 'noWarp'
 };
 
+const SerialNo = {
+    Serial0: '0',
+    Serial1: '1',
+    Serial2: '2',
+    Serial3: '3'
+};
+
 const Mode = {
     Input: 'INPUT',
     Output: 'OUTPUT',
@@ -129,8 +153,7 @@ const InterrupMode = {
     Rising: 'RISING',
     Falling: 'FALLING',
     Change: 'CHANGE',
-    Low: 'LOW',
-    High: 'High'
+    Low: 'LOW'
 };
 
 const DataType = {
@@ -140,9 +163,9 @@ const DataType = {
 };
 
 /**
- * Manage communication with a Arduino esp32 peripheral over a OpenBlock Link client socket.
+ * Manage communication with a Arduino Mega2560 peripheral over a OpenBlock Link client socket.
  */
-class ArduinoEsp32 extends EspPeripheral{
+class ArduinoMega2560 extends ArduinoPeripheral{
     /**
      * Construct a Arduino communication object.
      * @param {Runtime} runtime - the OpenBlock runtime
@@ -155,262 +178,297 @@ class ArduinoEsp32 extends EspPeripheral{
 }
 
 /**
- * OpenBlock blocks to interact with a Arduino esp32 peripheral.
+ * OpenBlock blocks to interact with a Arduino Mega2560 peripheral.
  */
-class OpenBlockArduinoEsp32Device {
+class OpenBlockArduinoMega2560Device {
     /**
      * @return {string} - the ID of this extension.
      */
-    static get DEVICE_ID () {
-        return 'arduinoEsp32';
+    get DEVICE_ID () {
+        return 'arduinoMega2560';
     }
 
     get PINS_MENU () {
         return [
             {
-                text: 'IO0',
-                value: Pins.IO0
+                text: '0',
+                value: Pins.D0
             },
             {
-                text: 'IO1',
-                value: Pins.IO1
+                text: '1',
+                value: Pins.D1
             },
             {
-                text: 'IO2',
-                value: Pins.IO2
+                text: '2',
+                value: Pins.D2
             },
             {
-                text: 'IO3',
-                value: Pins.IO3
+                text: '3',
+                value: Pins.D3
             },
             {
-                text: 'IO4',
-                value: Pins.IO4
+                text: '4',
+                value: Pins.D4
             },
             {
-                text: 'IO5',
-                value: Pins.IO5
+                text: '5',
+                value: Pins.D5
             },
             {
-                text: 'IO6',
-                value: Pins.IO6
+                text: '6',
+                value: Pins.D6
             },
             {
-                text: 'IO7',
-                value: Pins.IO7
+                text: '7',
+                value: Pins.D7
             },
             {
-                text: 'IO8',
-                value: Pins.IO8
+                text: '8',
+                value: Pins.D8
             },
             {
-                text: 'IO9',
-                value: Pins.IO9
+                text: '9',
+                value: Pins.D9
             },
             {
-                text: 'IO10',
-                value: Pins.IO10
+                text: '10',
+                value: Pins.D10
             },
             {
-                text: 'IO11',
-                value: Pins.IO11
+                text: '11',
+                value: Pins.D11
             },
             {
-                text: 'IO12',
-                value: Pins.IO12
+                text: '12',
+                value: Pins.D12
             },
             {
-                text: 'IO13',
-                value: Pins.IO13
+                text: '13',
+                value: Pins.D13
             },
             {
-                text: 'IO14',
-                value: Pins.IO14
+                text: '14',
+                value: Pins.D14
             },
             {
-                text: 'IO15',
-                value: Pins.IO15
+                text: '15',
+                value: Pins.D15
             },
             {
-                text: 'IO16',
-                value: Pins.IO16
+                text: '16',
+                value: Pins.D16
             },
             {
-                text: 'IO17',
-                value: Pins.IO17
+                text: '17',
+                value: Pins.D17
             },
             {
-                text: 'IO18',
-                value: Pins.IO18
+                text: '18',
+                value: Pins.D18
             },
             {
-                text: 'IO19',
-                value: Pins.IO19
+                text: '19',
+                value: Pins.D19
             },
             {
-                text: 'IO21',
-                value: Pins.IO21
+                text: '20',
+                value: Pins.D20
             },
             {
-                text: 'IO22',
-                value: Pins.IO22
+                text: '21',
+                value: Pins.D21
             },
             {
-                text: 'IO23',
-                value: Pins.IO23
+                text: '22',
+                value: Pins.D22
             },
             {
-                text: 'IO25',
-                value: Pins.IO25
+                text: '23',
+                value: Pins.D23
             },
             {
-                text: 'IO26',
-                value: Pins.IO26
+                text: '24',
+                value: Pins.D24
             },
             {
-                text: 'IO27',
-                value: Pins.IO27
+                text: '25',
+                value: Pins.D25
             },
             {
-                text: 'IO32',
-                value: Pins.IO32
+                text: '26',
+                value: Pins.D26
             },
             {
-                text: 'IO33',
-                value: Pins.IO33
+                text: '27',
+                value: Pins.D27
             },
             {
-                text: 'IO34',
-                value: Pins.IO34
+                text: '28',
+                value: Pins.D28
             },
             {
-                text: 'IO35',
-                value: Pins.IO35
+                text: '29',
+                value: Pins.D29
             },
             {
-                text: 'IO36',
-                value: Pins.IO36
+                text: '30',
+                value: Pins.D30
             },
             {
-                text: 'IO39',
-                value: Pins.IO39
-            }
-        ];
-    }
-
-    get OUT_PINS_MENU () {
-        return [
-            {
-                text: 'IO0',
-                value: Pins.IO0
+                text: '31',
+                value: Pins.D31
             },
             {
-                text: 'IO1',
-                value: Pins.IO1
+                text: '32',
+                value: Pins.D32
             },
             {
-                text: 'IO2',
-                value: Pins.IO2
+                text: '33',
+                value: Pins.D33
             },
             {
-                text: 'IO3',
-                value: Pins.IO3
+                text: '34',
+                value: Pins.D34
             },
             {
-                text: 'IO4',
-                value: Pins.IO4
+                text: '35',
+                value: Pins.D35
             },
             {
-                text: 'IO5',
-                value: Pins.IO5
+                text: '36',
+                value: Pins.D36
             },
             {
-                text: 'IO6',
-                value: Pins.IO6
+                text: '37',
+                value: Pins.D37
             },
             {
-                text: 'IO7',
-                value: Pins.IO7
+                text: '38',
+                value: Pins.D38
             },
             {
-                text: 'IO8',
-                value: Pins.IO8
+                text: '39',
+                value: Pins.D39
             },
             {
-                text: 'IO9',
-                value: Pins.IO9
+                text: '40',
+                value: Pins.D40
             },
             {
-                text: 'IO10',
-                value: Pins.IO10
+                text: '41',
+                value: Pins.D41
             },
             {
-                text: 'IO11',
-                value: Pins.IO11
+                text: '42',
+                value: Pins.D42
             },
             {
-                text: 'IO12',
-                value: Pins.IO12
+                text: '43',
+                value: Pins.D43
             },
             {
-                text: 'IO13',
-                value: Pins.IO13
+                text: '44',
+                value: Pins.D44
             },
             {
-                text: 'IO14',
-                value: Pins.IO14
+                text: '45',
+                value: Pins.D45
             },
             {
-                text: 'IO15',
-                value: Pins.IO15
+                text: '46',
+                value: Pins.D46
             },
             {
-                text: 'IO16',
-                value: Pins.IO16
+                text: '47',
+                value: Pins.D47
             },
             {
-                text: 'IO17',
-                value: Pins.IO17
+                text: '48',
+                value: Pins.D48
             },
             {
-                text: 'IO18',
-                value: Pins.IO18
+                text: '49',
+                value: Pins.D49
             },
             {
-                text: 'IO19',
-                value: Pins.IO19
+                text: '50',
+                value: Pins.D50
             },
             {
-                text: 'IO21',
-                value: Pins.IO21
+                text: '51',
+                value: Pins.D51
             },
             {
-                text: 'IO22',
-                value: Pins.IO22
+                text: '52',
+                value: Pins.D52
             },
             {
-                text: 'IO23',
-                value: Pins.IO23
+                text: '53',
+                value: Pins.D53
             },
             {
-                text: 'IO25',
-                value: Pins.IO25
+                text: 'A0',
+                value: Pins.A0
             },
             {
-                text: 'IO26',
-                value: Pins.IO26
+                text: 'A1',
+                value: Pins.A1
             },
             {
-                text: 'IO27',
-                value: Pins.IO27
+                text: 'A2',
+                value: Pins.A2
             },
             {
-                text: 'IO32',
-                value: Pins.IO32
+                text: 'A3',
+                value: Pins.A3
             },
             {
-                text: 'IO33',
-                value: Pins.IO33
+                text: 'A4',
+                value: Pins.A4
+            },
+            {
+                text: 'A5',
+                value: Pins.A5
+            },
+            {
+                text: 'A6',
+                value: Pins.A6
+            },
+            {
+                text: 'A7',
+                value: Pins.A7
+            },
+            {
+                text: 'A8',
+                value: Pins.A8
+            },
+            {
+                text: 'A9',
+                value: Pins.A9
+            },
+            {
+                text: 'A10',
+                value: Pins.A10
+            },
+            {
+                text: 'A11',
+                value: Pins.A11
+            },
+            {
+                text: 'A12',
+                value: Pins.A12
+            },
+            {
+                text: 'A13',
+                value: Pins.A13
+            },
+            {
+                text: 'A14',
+                value: Pins.A14
+            },
+            {
+                text: 'A15',
+                value: Pins.A15
             }
         ];
     }
@@ -419,7 +477,7 @@ class OpenBlockArduinoEsp32Device {
         return [
             {
                 text: formatMessage({
-                    id: 'arduinoEsp32.modeMenu.input',
+                    id: 'arduinoMega2560.modeMenu.input',
                     default: 'input',
                     description: 'label for input pin mode'
                 }),
@@ -427,7 +485,7 @@ class OpenBlockArduinoEsp32Device {
             },
             {
                 text: formatMessage({
-                    id: 'arduinoEsp32.modeMenu.output',
+                    id: 'arduinoMega2560.modeMenu.output',
                     default: 'output',
                     description: 'label for output pin mode'
                 }),
@@ -435,7 +493,7 @@ class OpenBlockArduinoEsp32Device {
             },
             {
                 text: formatMessage({
-                    id: 'arduinoEsp32.modeMenu.inputPullup',
+                    id: 'arduinoMega2560.modeMenu.inputPullup',
                     default: 'input-pullup',
                     description: 'label for input-pullup pin mode'
                 }),
@@ -447,68 +505,68 @@ class OpenBlockArduinoEsp32Device {
     get ANALOG_PINS_MENU () {
         return [
             {
-                text: 'IO0',
-                value: Pins.IO0
+                text: 'A0',
+                value: Pins.A0
             },
             {
-                text: 'IO2',
-                value: Pins.IO2
+                text: 'A1',
+                value: Pins.A1
             },
             {
-                text: 'IO4',
-                value: Pins.IO4
+                text: 'A2',
+                value: Pins.A2
             },
             {
-                text: 'IO12',
-                value: Pins.IO12
+                text: 'A3',
+                value: Pins.A3
             },
             {
-                text: 'IO13',
-                value: Pins.IO13
+                text: 'A4',
+                value: Pins.A4
             },
             {
-                text: 'IO14',
-                value: Pins.IO14
+                text: 'A5',
+                value: Pins.A5
             },
             {
-                text: 'IO15',
-                value: Pins.IO15
+                text: 'A6',
+                value: Pins.A6
             },
             {
-                text: 'IO25',
-                value: Pins.IO25
+                text: 'A7',
+                value: Pins.A7
             },
             {
-                text: 'IO26',
-                value: Pins.IO26
+                text: 'A8',
+                value: Pins.A8
             },
             {
-                text: 'IO27',
-                value: Pins.IO27
+                text: 'A9',
+                value: Pins.A9
             },
             {
-                text: 'IO32',
-                value: Pins.IO32
+                text: 'A10',
+                value: Pins.A10
             },
             {
-                text: 'IO33',
-                value: Pins.IO33
+                text: 'A11',
+                value: Pins.A11
             },
             {
-                text: 'IO34',
-                value: Pins.IO34
+                text: 'A12',
+                value: Pins.A12
             },
             {
-                text: 'IO35',
-                value: Pins.IO35
+                text: 'A13',
+                value: Pins.A13
             },
             {
-                text: 'IO36',
-                value: Pins.IO36
+                text: 'A14',
+                value: Pins.A14
             },
             {
-                text: 'IO39',
-                value: Pins.IO39
+                text: 'A15',
+                value: Pins.A15
             }
         ];
     }
@@ -517,7 +575,7 @@ class OpenBlockArduinoEsp32Device {
         return [
             {
                 text: formatMessage({
-                    id: 'arduinoEsp32.levelMenu.high',
+                    id: 'arduinoMega2560.levelMenu.high',
                     default: 'high',
                     description: 'label for high level'
                 }),
@@ -525,7 +583,7 @@ class OpenBlockArduinoEsp32Device {
             },
             {
                 text: formatMessage({
-                    id: 'arduinoEsp32.levelMenu.low',
+                    id: 'arduinoMega2560.levelMenu.low',
                     default: 'low',
                     description: 'label for low level'
                 }),
@@ -534,129 +592,96 @@ class OpenBlockArduinoEsp32Device {
         ];
     }
 
-    get LEDC_CHANNELS_MENU () {
+    get PWM_PINS_MENU () {
         return [
             {
-                text: 'CH0 (LT0)',
-                value: Channels.CH0
+                text: '2',
+                value: Pins.D2
             },
             {
-                text: 'CH1 (LT0)',
-                value: Channels.CH1
+                text: '3',
+                value: Pins.D3
             },
             {
-                text: 'CH2 (LT1)',
-                value: Channels.CH2
+                text: '4',
+                value: Pins.D4
             },
             {
-                text: 'CH3 (LT1)',
-                value: Channels.CH3
+                text: '5',
+                value: Pins.D5
             },
             {
-                text: 'CH4 (LT2)',
-                value: Channels.CH4
+                text: '6',
+                value: Pins.D6
             },
             {
-                text: 'CH5 (LT2)',
-                value: Channels.CH5
+                text: '7',
+                value: Pins.D7
             },
             {
-                text: 'CH6 (LT3)',
-                value: Channels.CH6
+                text: '8',
+                value: Pins.D8
             },
             {
-                text: 'CH7 (LT3)',
-                value: Channels.CH7
+                text: '9',
+                value: Pins.D9
             },
             {
-                text: 'CH8 (HT0)',
-                value: Channels.CH8
+                text: '10',
+                value: Pins.D10
             },
             {
-                text: 'CH9 (HT0)',
-                value: Channels.CH9
+                text: '11',
+                value: Pins.D11
             },
             {
-                text: 'CH10 (HT1)',
-                value: Channels.CH10
+                text: '12',
+                value: Pins.D12
             },
             {
-                text: 'CH11 (HT1)',
-                value: Channels.CH11
+                text: '13',
+                value: Pins.D13
             },
             {
-                text: 'CH12 (HT2)',
-                value: Channels.CH12
+                text: '44',
+                value: Pins.D44
             },
             {
-                text: 'CH13 (HT2)',
-                value: Channels.CH13
+                text: '45',
+                value: Pins.D45
             },
             {
-                text: 'CH14 (HT3)',
-                value: Channels.CH14
-            },
-            {
-                text: 'CH15 (HT3)',
-                value: Channels.CH15
+                text: '46',
+                value: Pins.D46
             }
         ];
     }
 
-    get DAC_PINS_MENU () {
+    get INTERRUPT_PINS_MENU () {
         return [
             {
-                text: 'IO25',
-                value: Pins.IO25
+                text: '2',
+                value: Pins.D2
             },
             {
-                text: 'IO26',
-                value: Pins.IO26
-            }
-        ];
-    }
-
-    get TOUCH_PINS_MENU () {
-        return [
-            {
-                text: 'IO0',
-                value: Pins.IO0
+                text: '3',
+                value: Pins.D3
             },
             {
-                text: 'IO2',
-                value: Pins.IO2
+                text: '18',
+                value: Pins.D18
             },
             {
-                text: 'IO4',
-                value: Pins.IO4
+                text: '19',
+                value: Pins.D19
             },
             {
-                text: 'IO12',
-                value: Pins.IO12
+                text: '20',
+                value: Pins.D20
             },
             {
-                text: 'IO13',
-                value: Pins.IO13
-            },
-            {
-                text: 'IO14',
-                value: Pins.IO14
-            },
-            {
-                text: 'IO15',
-                value: Pins.IO15
-            },
-            {
-                text: 'IO27',
-                value: Pins.IO27
-            },
-            {
-                text: 'IO32',
-                value: Pins.IO32
-            },
-            {
-                text: 'IO33',
-                value: Pins.IO33
+                text: '21',
+                value: Pins.D21
             }
         ];
     }
@@ -665,7 +690,7 @@ class OpenBlockArduinoEsp32Device {
         return [
             {
                 text: formatMessage({
-                    id: 'arduinoEsp32.InterrupModeMenu.risingEdge',
+                    id: 'arduinoMega2560.InterrupModeMenu.risingEdge',
                     default: 'rising edge',
                     description: 'label for rising edge interrup'
                 }),
@@ -673,7 +698,7 @@ class OpenBlockArduinoEsp32Device {
             },
             {
                 text: formatMessage({
-                    id: 'arduinoEsp32.InterrupModeMenu.fallingEdge',
+                    id: 'arduinoMega2560.InterrupModeMenu.fallingEdge',
                     default: 'falling edge',
                     description: 'label for falling edge interrup'
                 }),
@@ -681,7 +706,7 @@ class OpenBlockArduinoEsp32Device {
             },
             {
                 text: formatMessage({
-                    id: 'arduinoEsp32.InterrupModeMenu.changeEdge',
+                    id: 'arduinoMega2560.InterrupModeMenu.changeEdge',
                     default: 'change edge',
                     description: 'label for change edge interrup'
                 }),
@@ -689,36 +714,11 @@ class OpenBlockArduinoEsp32Device {
             },
             {
                 text: formatMessage({
-                    id: 'arduinoEsp32.InterrupModeMenu.low',
+                    id: 'arduinoMega2560.InterrupModeMenu.low',
                     default: 'low',
                     description: 'label for low interrup'
                 }),
                 value: InterrupMode.Low
-            },
-            {
-                text: formatMessage({
-                    id: 'arduinoEsp32.InterrupModeMenu.high',
-                    default: 'high',
-                    description: 'label for high interrup'
-                }),
-                value: InterrupMode.High
-            }
-        ];
-    }
-
-    get SERIAL_NO_MENU () {
-        return [
-            {
-                text: '0',
-                value: SerialNo.Serial0
-            },
-            // {
-            //     text: '1',
-            //     value: SerialNo.Serial1
-            // },
-            {
-                text: '2',
-                value: SerialNo.Serial2
             }
         ];
     }
@@ -756,11 +756,32 @@ class OpenBlockArduinoEsp32Device {
         ];
     }
 
+    get SERIAL_NO_MENU () {
+        return [
+            {
+                text: '0',
+                value: SerialNo.Serial0
+            },
+            {
+                text: '1',
+                value: SerialNo.Serial1
+            },
+            {
+                text: '2',
+                value: SerialNo.Serial2
+            },
+            {
+                text: '3',
+                value: SerialNo.Serial3
+            }
+        ];
+    }
+
     get EOL_MENU () {
         return [
             {
                 text: formatMessage({
-                    id: 'arduinoEsp32.eolMenu.warp',
+                    id: 'arduinoMega2560.eolMenu.warp',
                     default: 'warp',
                     description: 'label for warp print'
                 }),
@@ -768,7 +789,7 @@ class OpenBlockArduinoEsp32Device {
             },
             {
                 text: formatMessage({
-                    id: 'arduinoEsp32.eolMenu.noWarp',
+                    id: 'arduinoMega2560.eolMenu.noWarp',
                     default: 'no-warp',
                     description: 'label for no warp print'
                 }),
@@ -781,7 +802,7 @@ class OpenBlockArduinoEsp32Device {
         return [
             {
                 text: formatMessage({
-                    id: 'arduinoEsp32.dataTypeMenu.integer',
+                    id: 'arduinoMega2560.dataTypeMenu.integer',
                     default: 'integer',
                     description: 'label for integer'
                 }),
@@ -789,7 +810,7 @@ class OpenBlockArduinoEsp32Device {
             },
             {
                 text: formatMessage({
-                    id: 'arduinoEsp32.dataTypeMenu.decimal',
+                    id: 'arduinoMega2560.dataTypeMenu.decimal',
                     default: 'decimal',
                     description: 'label for decimal number'
                 }),
@@ -797,7 +818,7 @@ class OpenBlockArduinoEsp32Device {
             },
             {
                 text: formatMessage({
-                    id: 'arduinoEsp32.dataTypeMenu.string',
+                    id: 'arduinoMega2560.dataTypeMenu.string',
                     default: 'string',
                     description: 'label for string'
                 }),
@@ -818,9 +839,8 @@ class OpenBlockArduinoEsp32Device {
          */
         this.runtime = runtime;
 
-        // Create a new Arduino esp32 peripheral instance
-        this._peripheral = new ArduinoEsp32(this.runtime,
-            OpenBlockArduinoEsp32Device.DEVICE_ID, originalDeviceId);
+        // Create a new Arduino mega 2560 peripheral instance
+        this._peripheral = new ArduinoMega2560(this.runtime, this.DEVICE_ID, originalDeviceId);
     }
 
     /**
@@ -831,9 +851,9 @@ class OpenBlockArduinoEsp32Device {
             {
                 id: 'pin',
                 name: formatMessage({
-                    id: 'esp32Arduino.category.pins',
+                    id: 'arduinoMega2560.category.pins',
                     default: 'Pins',
-                    description: 'The name of the esp32 arduino device pin category'
+                    description: 'The name of the arduino mega2560 device pin category'
                 }),
                 color1: '#4C97FF',
                 color2: '#3373CC',
@@ -843,16 +863,16 @@ class OpenBlockArduinoEsp32Device {
                     {
                         opcode: 'setPinMode',
                         text: formatMessage({
-                            id: 'esp32Arduino.pins.setPinMode',
+                            id: 'arduinoMega2560.pins.setPinMode',
                             default: 'set pin [PIN] mode [MODE]',
-                            description: 'esp32Arduino set pin mode'
+                            description: 'arduinoMega2560 set pin mode'
                         }),
                         blockType: BlockType.COMMAND,
                         arguments: {
                             PIN: {
                                 type: ArgumentType.STRING,
-                                menu: 'outPins',
-                                defaultValue: Pins.IO2
+                                menu: 'pins',
+                                defaultValue: Pins.D0
                             },
                             MODE: {
                                 type: ArgumentType.STRING,
@@ -864,16 +884,16 @@ class OpenBlockArduinoEsp32Device {
                     {
                         opcode: 'setDigitalOutput',
                         text: formatMessage({
-                            id: 'esp32Arduino.pins.setDigitalOutput',
+                            id: 'arduinoMega2560.pins.setDigitalOutput',
                             default: 'set digital pin [PIN] out [LEVEL]',
-                            description: 'esp32Arduino set digital pin out'
+                            description: 'arduinoMega2560 set digital pin out'
                         }),
                         blockType: BlockType.COMMAND,
                         arguments: {
                             PIN: {
                                 type: ArgumentType.STRING,
-                                menu: 'outPins',
-                                defaultValue: Pins.IO2
+                                menu: 'pins',
+                                defaultValue: Pins.D0
                             },
                             LEVEL: {
                                 type: ArgumentType.STRING,
@@ -883,48 +903,23 @@ class OpenBlockArduinoEsp32Device {
                         }
                     },
                     {
-                        opcode: 'esp32SetPwmOutput',
-                        text: formatMessage({
-                            id: 'esp32Arduino.pins.esp32SetPwmOutput',
-                            default: 'set pwm pin [PIN] use channel [CH] out [OUT]',
-                            description: 'esp32Arduino set pwm pin out'
-                        }),
-                        blockType: BlockType.COMMAND,
-                        arguments: {
-                            PIN: {
-                                type: ArgumentType.STRING,
-                                menu: 'outPins',
-                                defaultValue: Pins.IO2
-                            },
-                            OUT: {
-                                type: ArgumentType.NUMBER,
-                                defaultValue: '0'
-                            },
-                            CH: {
-                                type: ArgumentType.NUMBER,
-                                menu: 'ledcChannels',
-                                defaultValue: Channels.CH0
-                            }
-                        }
-                    },
-                    {
 
-                        opcode: 'esp32SetDACOutput',
+                        opcode: 'setPwmOutput',
                         text: formatMessage({
-                            id: 'esp32Arduino.pins.esp32SetDACOutput',
-                            default: 'set dac pin [PIN] out [OUT]',
-                            description: 'esp32Arduino set dac pin out'
+                            id: 'arduinoMega2560.pins.setPwmOutput',
+                            default: 'set pwm pin [PIN] out [OUT]',
+                            description: 'arduinoMega2560 set pwm pin out'
                         }),
                         blockType: BlockType.COMMAND,
                         arguments: {
                             PIN: {
                                 type: ArgumentType.STRING,
-                                menu: 'dacPins',
-                                defaultValue: Pins.IO25
+                                menu: 'pwmPins',
+                                defaultValue: Pins.D3
                             },
                             OUT: {
-                                type: ArgumentType.NUMBER,
-                                defaultValue: '0'
+                                type: ArgumentType.UINT8_NUMBER,
+                                defaultValue: '255'
                             }
                         }
                     },
@@ -932,93 +927,72 @@ class OpenBlockArduinoEsp32Device {
                     {
                         opcode: 'readDigitalPin',
                         text: formatMessage({
-                            id: 'arduinoEsp32.pins.readDigitalPin',
+                            id: 'arduinoMega2560.pins.readDigitalPin',
                             default: 'read digital pin [PIN]',
-                            description: 'arduinoEsp32 read digital pin'
+                            description: 'arduinoMega2560 read digital pin'
                         }),
                         blockType: BlockType.BOOLEAN,
                         arguments: {
                             PIN: {
                                 type: ArgumentType.STRING,
                                 menu: 'pins',
-                                defaultValue: Pins.IO2
+                                defaultValue: Pins.D0
                             }
                         }
                     },
                     {
                         opcode: 'readAnalogPin',
                         text: formatMessage({
-                            id: 'arduinoEsp32.pins.readAnalogPin',
+                            id: 'arduinoMega2560.pins.readAnalogPin',
                             default: 'read analog pin [PIN]',
-                            description: 'arduinoEsp32 read analog pin'
+                            description: 'arduinoMega2560 read analog pin'
                         }),
                         blockType: BlockType.REPORTER,
                         arguments: {
                             PIN: {
                                 type: ArgumentType.STRING,
                                 menu: 'analogPins',
-                                defaultValue: Pins.IO2
-                            }
-                        }
-                    },
-                    {
-                        opcode: 'esp32ReadTouchPin',
-                        text: formatMessage({
-                            id: 'arduinoEsp32.pins.esp32ReadTouchPin',
-                            default: 'read touch pin [PIN]',
-                            description: 'arduinoEsp32 read touch pin'
-                        }),
-                        blockType: BlockType.REPORTER,
-                        arguments: {
-                            PIN: {
-                                type: ArgumentType.STRING,
-                                menu: 'touchPins',
-                                defaultValue: Pins.IO2
+                                defaultValue: Pins.A0
                             }
                         }
                     },
                     '---',
                     {
 
-                        opcode: 'esp32SetServoOutput',
+                        opcode: 'setServoOutput',
                         text: formatMessage({
-                            id: 'arduinoEsp32.pins.setServoOutput',
-                            default: 'set servo pin [PIN] use channel [CH] out [OUT]',
-                            description: 'arduinoEsp32 set servo pin out'
+                            id: 'arduinoMega2560.pins.setServoOutput',
+                            default: 'set servo pin [PIN] out [OUT]',
+                            description: 'arduinoMega2560 set servo pin out'
                         }),
                         blockType: BlockType.COMMAND,
                         arguments: {
                             PIN: {
                                 type: ArgumentType.STRING,
-                                menu: 'outPins',
-                                defaultValue: Pins.IO2
+                                menu: 'pwmPins',
+                                defaultValue: Pins.D3
                             },
                             OUT: {
-                                type: ArgumentType.ANGLE,
-                                defaultValue: '0'
-                            },
-                            CH: {
-                                type: ArgumentType.NUMBER,
-                                menu: 'ledcChannels',
-                                defaultValue: Channels.CH0
+                                type: ArgumentType.HALF_ANGLE,
+                                defaultValue: '90'
                             }
                         }
                     },
                     '---',
                     {
 
-                        opcode: 'esp32AttachInterrupt',
+                        opcode: 'attachInterrupt',
                         text: formatMessage({
-                            id: 'arduinoEsp32.pins.esp32AttachInterrupt',
+                            id: 'arduinoMega2560.pins.attachInterrupt',
                             default: 'attach interrupt pin [PIN] mode [MODE] executes',
-                            description: 'arduinoEsp32 attach interrupt'
+                            description: 'arduinoMega2560 attach interrupt'
                         }),
                         blockType: BlockType.CONDITIONAL,
                         arguments: {
                             PIN: {
                                 type: ArgumentType.STRING,
-                                menu: 'pins',
-                                defaultValue: Pins.IO2
+                                menu: 'interruptPins',
+                                defaultValue: Pins.D3
                             },
                             MODE: {
                                 type: ArgumentType.STRING,
@@ -1030,18 +1004,18 @@ class OpenBlockArduinoEsp32Device {
                     },
                     {
 
-                        opcode: 'esp32DetachInterrupt',
+                        opcode: 'detachInterrupt',
                         text: formatMessage({
-                            id: 'arduinoEsp32.pins.esp32DetachInterrupt',
+                            id: 'arduinoMega2560.pins.detachInterrupt',
                             default: 'detach interrupt pin [PIN]',
-                            description: 'arduinoEsp32 detach interrupt'
+                            description: 'arduinoMega2560 detach interrupt'
                         }),
                         blockType: BlockType.COMMAND,
                         arguments: {
                             PIN: {
                                 type: ArgumentType.STRING,
-                                menu: 'pins',
-                                defaultValue: Pins.IO2
+                                menu: 'interruptPins',
+                                defaultValue: Pins.D3
                             }
                         },
                         programMode: [ProgramModeType.UPLOAD]
@@ -1050,9 +1024,6 @@ class OpenBlockArduinoEsp32Device {
                 menus: {
                     pins: {
                         items: this.PINS_MENU
-                    },
-                    outPins: {
-                        items: this.OUT_PINS_MENU
                     },
                     mode: {
                         items: this.MODE_MENU
@@ -1064,14 +1035,11 @@ class OpenBlockArduinoEsp32Device {
                         acceptReporters: true,
                         items: this.LEVEL_MENU
                     },
-                    ledcChannels: {
-                        items: this.LEDC_CHANNELS_MENU
+                    pwmPins: {
+                        items: this.PWM_PINS_MENU
                     },
-                    dacPins: {
-                        items: this.DAC_PINS_MENU
-                    },
-                    touchPins: {
-                        items: this.TOUCH_PINS_MENU
+                    interruptPins: {
+                        items: this.INTERRUPT_PINS_MENU
                     },
                     interruptMode: {
                         items: this.INTERRUP_MODE_MENU
@@ -1081,9 +1049,9 @@ class OpenBlockArduinoEsp32Device {
             {
                 id: 'serial',
                 name: formatMessage({
-                    id: 'arduinoEsp32.category.serial',
+                    id: 'arduinoMega2560.category.serial',
                     default: 'Serial',
-                    description: 'The name of the arduino esp32 device serial category'
+                    description: 'The name of the arduino mega2560 device serial category'
                 }),
                 color1: '#9966FF',
                 color2: '#774DCB',
@@ -1093,9 +1061,9 @@ class OpenBlockArduinoEsp32Device {
                     {
                         opcode: 'multiSerialBegin',
                         text: formatMessage({
-                            id: 'arduinoEsp32.serial.multiSerialBegin',
+                            id: 'arduinoMega2560.serial.multiSerialBegin',
                             default: 'serial [NO] begin baudrate [VALUE]',
-                            description: 'arduinoEsp32 multi serial begin'
+                            description: 'arduinoMega2560 multi serial begin'
                         }),
                         blockType: BlockType.COMMAND,
                         arguments: {
@@ -1107,7 +1075,7 @@ class OpenBlockArduinoEsp32Device {
                             VALUE: {
                                 type: ArgumentType.STRING,
                                 menu: 'baudrate',
-                                defaultValue: Buadrate.B115200
+                                defaultValue: Buadrate.B9600
                             }
                         },
                         programMode: [ProgramModeType.UPLOAD]
@@ -1115,9 +1083,9 @@ class OpenBlockArduinoEsp32Device {
                     {
                         opcode: 'multiSerialPrint',
                         text: formatMessage({
-                            id: 'arduinoEsp32.serial.multiSerialPrint',
+                            id: 'arduinoMega2560.serial.multiSerialPrint',
                             default: 'serial [NO] print [VALUE] [EOL]',
-                            description: 'arduinoEsp32 multi serial print'
+                            description: 'arduinoMega2560 multi serial print'
                         }),
                         blockType: BlockType.COMMAND,
                         arguments: {
@@ -1141,9 +1109,9 @@ class OpenBlockArduinoEsp32Device {
                     {
                         opcode: 'multiSerialAvailable',
                         text: formatMessage({
-                            id: 'arduinoEsp32.serial.multiSerialAvailable',
+                            id: 'arduinoMega2560.serial.multiSerialAvailable',
                             default: 'serial [NO] available data length',
-                            description: 'arduinoEsp32 multi serial available data length'
+                            description: 'arduinoMega2560 multi serial available data length'
                         }),
                         arguments: {
                             NO: {
@@ -1158,9 +1126,9 @@ class OpenBlockArduinoEsp32Device {
                     {
                         opcode: 'multiSerialReadAByte',
                         text: formatMessage({
-                            id: 'arduinoEsp32.serial.multiSerialReadAByte',
+                            id: 'arduinoMega2560.serial.multiSerialReadAByte',
                             default: 'serial [NO] read a byte',
-                            description: 'arduinoEsp32 multi serial read a byte'
+                            description: 'arduinoMega2560 multi serial read a byte'
                         }),
                         arguments: {
                             NO: {
@@ -1186,58 +1154,22 @@ class OpenBlockArduinoEsp32Device {
                 }
             },
             {
-                id: 'sensor',
-                name: formatMessage({
-                    id: 'arduinoEsp32.category.sensor',
-                    default: 'Sensor',
-                    description: 'The name of the arduino esp32 device sensor category'
-                }),
-                color1: '#4CBFE6',
-                color2: '#2E8EB8',
-                color3: '#2E8EB8',
-
-                blocks: [
-                    {
-                        opcode: 'esp32ReadHallSensor',
-                        text: formatMessage({
-                            id: 'arduinoEsp32.sensor.readHallSensor',
-                            default: 'read hall sensor',
-                            description: 'arduino esp32 read hall sensor'
-                        }),
-                        blockType: BlockType.REPORTER,
-                        disableMonitor: true
-                    },
-                    '---',
-                    {
-                        opcode: 'runningTime',
-                        text: formatMessage({
-                            id: 'arduinoEsp32.sensor.runningTime',
-                            default: 'running time (millis)',
-                            description: 'arduino esp32 running time'
-                        }),
-                        blockType: BlockType.REPORTER,
-                        disableMonitor: true
-                    }
-                ]
-            },
-            {
                 id: 'data',
                 name: formatMessage({
-                    id: 'arduinoEsp32.category.data',
+                    id: 'arduinoMega2560.category.data',
                     default: 'Data',
-                    description: 'The name of the arduino esp32 device data category'
+                    description: 'The name of the arduino mega2560 device data category'
                 }),
                 color1: '#CF63CF',
                 color2: '#C94FC9',
                 color3: '#BD42BD',
-
                 blocks: [
                     {
                         opcode: 'dataMap',
                         text: formatMessage({
-                            id: 'arduinoEsp32.data.dataMap',
+                            id: 'arduinoMega2560.data.dataMap',
                             default: 'map [DATA] from ([ARG0], [ARG1]) to ([ARG2], [ARG3])',
-                            description: 'arduinoEsp32 data map'
+                            description: 'arduinoMega2560 data map'
                         }),
                         blockType: BlockType.REPORTER,
                         arguments: {
@@ -1264,13 +1196,12 @@ class OpenBlockArduinoEsp32Device {
                         },
                         programMode: [ProgramModeType.UPLOAD]
                     },
-                    '---',
                     {
                         opcode: 'dataConstrain',
                         text: formatMessage({
-                            id: 'arduinoEsp32.data.dataConstrain',
+                            id: 'arduinoMega2560.data.dataConstrain',
                             default: 'constrain [DATA] between ([ARG0], [ARG1])',
-                            description: 'arduinoEsp32 data constrain'
+                            description: 'arduinoMega2560 data constrain'
                         }),
                         blockType: BlockType.REPORTER,
                         arguments: {
@@ -1289,12 +1220,13 @@ class OpenBlockArduinoEsp32Device {
                         },
                         programMode: [ProgramModeType.UPLOAD]
                     },
+                    '---',
                     {
                         opcode: 'dataConvert',
                         text: formatMessage({
-                            id: 'arduinoEsp32.data.dataConvert',
+                            id: 'arduinoMega2560.data.dataConvert',
                             default: 'convert [DATA] to [TYPE]',
-                            description: 'arduinoEsp32 data convert'
+                            description: 'arduinoMega2560 data convert'
                         }),
                         blockType: BlockType.REPORTER,
                         arguments: {
@@ -1313,9 +1245,9 @@ class OpenBlockArduinoEsp32Device {
                     {
                         opcode: 'dataConvertASCIICharacter',
                         text: formatMessage({
-                            id: 'arduinoEsp32.data.dataConvertASCIICharacter',
+                            id: 'arduinoMega2560.data.dataConvertASCIICharacter',
                             default: 'convert [DATA] to ASCII character',
-                            description: 'arduinoEsp32 data convert to ASCII character'
+                            description: 'arduinoMega2560 data convert to ASCII character'
                         }),
                         blockType: BlockType.REPORTER,
                         arguments: {
@@ -1329,9 +1261,9 @@ class OpenBlockArduinoEsp32Device {
                     {
                         opcode: 'dataConvertASCIINumber',
                         text: formatMessage({
-                            id: 'arduinoEsp32.data.dataConvertASCIINumber',
+                            id: 'arduinoMega2560.data.dataConvertASCIINumber',
                             default: 'convert [DATA] to ASCII nubmer',
-                            description: 'arduinoEsp32 data convert to ASCII nubmer'
+                            description: 'arduinoMega2560 data convert to ASCII nubmer'
                         }),
                         blockType: BlockType.REPORTER,
                         arguments: {
@@ -1411,4 +1343,4 @@ class OpenBlockArduinoEsp32Device {
     }
 }
 
-module.exports = OpenBlockArduinoEsp32Device;
+module.exports = OpenBlockArduinoMega2560Device;

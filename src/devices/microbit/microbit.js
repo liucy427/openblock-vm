@@ -3,7 +3,7 @@ const formatMessage = require('format-message');
 const ArgumentType = require('../../extension-support/argument-type');
 const BlockType = require('../../extension-support/block-type');
 
-const MicrobitPeripheral = require('../arduinoCommon/microbit-peripheral');
+const CommonPeripheral = require('../common/common-peripheral');
 
 /**
 * The list of USB device filters.
@@ -87,9 +87,9 @@ const Level = {
 };
 
 /**
- * Manage communication with a Microbit V2 peripheral over a OpenBlock Link client socket.
+ * Manage communication with a Microbit peripheral over a OpenBlock Link client socket.
  */
-class MicrobitV2 extends MicrobitPeripheral{
+class Microbit extends CommonPeripheral{
     /**
      * Construct a Microbit communication object.
      * @param {Runtime} runtime - the OpenBlock runtime
@@ -102,14 +102,14 @@ class MicrobitV2 extends MicrobitPeripheral{
 }
 
 /**
- * OpenBlock blocks to interact with a Microbit V2 peripheral.
+ * OpenBlock blocks to interact with a Microbit peripheral.
  */
-class OpenBlockMicrobitV2Device {
+class OpenBlockMicrobitDevice {
     /**
      * @return {string} - the ID of this deivce.
      */
-    static get DEVICE_ID () {
-        return 'microbitV2';
+    get DEVICE_ID () {
+        return 'microbit';
     }
 
     get LEDSTATE_MENU () {
@@ -456,18 +456,19 @@ class OpenBlockMicrobitV2Device {
     }
 
     /**
-     * Construct a set of Microbit V2 blocks.
+     * Construct a set of Microbit blocks.
      * @param {Runtime} runtime - the OpenBlock runtime.
+     * @param {string} originalDeviceId - the original id of the peripheral, like xxx_arduinoUno
      */
-    constructor (runtime) {
+    constructor (runtime, originalDeviceId) {
         /**
          * The OpenBlock runtime.
          * @type {Runtime}
          */
         this.runtime = runtime;
 
-        // Create a new Microbit V2 peripheral instance
-        this._peripheral = new MicrobitV2(this.runtime, OpenBlockMicrobitV2Device.DEVICE_ID);
+        // Create a new Microbit peripheral instance
+        this._peripheral = new Microbit(this.runtime, this.DEVICE_ID, originalDeviceId);
     }
 
     /**
@@ -972,8 +973,8 @@ class OpenBlockMicrobitV2Device {
                 description: 'The name of the microbit device console category'
             }),
             color1: '#FF3399',
-            color2: '#FF3399',
-            color3: '#FF3399',
+            color2: '#CC297A',
+            color3: '#CC297A',
 
             blocks: [
                 {
@@ -998,4 +999,4 @@ class OpenBlockMicrobitV2Device {
     }
 }
 
-module.exports = OpenBlockMicrobitV2Device;
+module.exports = OpenBlockMicrobitDevice;

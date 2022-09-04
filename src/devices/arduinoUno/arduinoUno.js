@@ -4,20 +4,20 @@ const ArgumentType = require('../../extension-support/argument-type');
 const BlockType = require('../../extension-support/block-type');
 const ProgramModeType = require('../../extension-support/program-mode-type');
 
-const ArduinoPeripheral = require('../arduinoCommon/arduino-peripheral');
+const ArduinoPeripheral = require('../common/arduino-peripheral');
 
 /**
  * The list of USB device filters.
  * @readonly
  */
 const PNPID_LIST = [
-    // https://github.com/arduino/Arduino/blob/1.8.0/hardware/arduino/avr/boards.txt#L268-L275
-    'USB\\VID_1B4F&PID_2B74',
-    'USB\\VID_1B4F&PID_2B75',
-    'USB\\VID_2341&PID_0036',
-    'USB\\VID_2341&PID_8036',
-    'USB\\VID_2A03&PID_0036',
-    'USB\\VID_2A03&PID_8036'
+    // https://github.com/arduino/Arduino/blob/1.8.0/hardware/arduino/avr/boards.txt#L51-L58
+    'USB\\VID_2341&PID_0043',
+    'USB\\VID_2341&PID_0001',
+    'USB\\VID_2A03&PID_0043',
+    'USB\\VID_2341&PID_0243',
+    // For chinese clones that use CH340
+    'USB\\VID_1A86&PID_7523'
 ];
 
 /**
@@ -31,24 +31,30 @@ const SERIAL_CONFIG = {
 };
 
 /**
- * Configuration of build and flash. Used by arduino_debug and avrdude.
+ * Configuration for arduino-cli.
  * @readonly
  */
 const DIVECE_OPT = {
     type: 'arduino',
-    fqbn: 'SparkFun:avr:makeymakey'
+    fqbn: 'arduino:avr:uno',
+    firmware: 'arduinoUno.standardFirmata.ino.hex'
 };
 
 const Pins = {
-    D0: 'PD0',
-    D1: 'PD1',
-    D2: 'PD2',
-    D3: 'PD3',
-    D4: 'PD4',
-    D5: 'PD5',
-    D14: 'MISO',
-    D15: 'SCK',
-    D16: 'MOSI',
+    D0: '0',
+    D1: '1',
+    D2: '2',
+    D3: '3',
+    D4: '4',
+    D5: '5',
+    D6: '6',
+    D7: '7',
+    D8: '8',
+    D9: '9',
+    D10: '10',
+    D11: '11',
+    D12: '12',
+    D13: '13',
     A0: 'A0',
     A1: 'A1',
     A2: 'A2',
@@ -59,8 +65,8 @@ const Pins = {
 
 
 const Level = {
-    High: '1',
-    Low: '0'
+    High: 'HIGH',
+    Low: 'LOW'
 };
 
 const Buadrate = {
@@ -98,9 +104,9 @@ const DataType = {
 };
 
 /**
- * Manage communication with a Arduino Leonardo peripheral over a OpenBlock Link client socket.
+ * Manage communication with a Arduino Uno peripheral over a OpenBlock Link client socket.
  */
-class MakeyMakey extends ArduinoPeripheral{
+class ArduinoUno extends ArduinoPeripheral{
     /**
      * Construct a Arduino communication object.
      * @param {Runtime} runtime - the OpenBlock runtime
@@ -113,53 +119,73 @@ class MakeyMakey extends ArduinoPeripheral{
 }
 
 /**
- * OpenBlock blocks to interact with a Arduino Leonardo peripheral.
+ * OpenBlock blocks to interact with a Arduino Uno peripheral.
  */
-class OpenBlockMakeyMakeyDevice {
+class OpenBlockArduinoUnoDevice {
     /**
      * @return {string} - the ID of this extension.
      */
-    static get DEVICE_ID () {
-        return 'makeyMakey';
+    get DEVICE_ID () {
+        return 'arduinoUno';
     }
 
     get PINS_MENU () {
         return [
             {
-                text: 'D0',
+                text: '0',
                 value: Pins.D0
             },
             {
-                text: 'D1',
+                text: '1',
                 value: Pins.D1
             },
             {
-                text: 'D2',
+                text: '2',
                 value: Pins.D2
             },
             {
-                text: 'D3',
+                text: '3',
                 value: Pins.D3
             },
             {
-                text: 'D4',
+                text: '4',
                 value: Pins.D4
             },
             {
-                text: 'D5',
+                text: '5',
                 value: Pins.D5
             },
             {
-                text: 'D14',
-                value: Pins.D14
+                text: '6',
+                value: Pins.D6
             },
             {
-                text: 'D15',
-                value: Pins.D15
+                text: '7',
+                value: Pins.D7
             },
             {
-                text: 'D16',
-                value: Pins.D16
+                text: '8',
+                value: Pins.D8
+            },
+            {
+                text: '9',
+                value: Pins.D9
+            },
+            {
+                text: '10',
+                value: Pins.D10
+            },
+            {
+                text: '11',
+                value: Pins.D11
+            },
+            {
+                text: '12',
+                value: Pins.D12
+            },
+            {
+                text: '13',
+                value: Pins.D13
             },
             {
                 text: 'A0',
@@ -270,37 +296,28 @@ class OpenBlockMakeyMakeyDevice {
     get PWM_PINS_MENU () {
         return [
             {
-                text: 'D3',
-                value: Pins.D3
-            }
-        ];
-    }
-
-    get SERVO_PINS_MENU () {
-        return [
-            {
-                text: 'D0',
-                value: Pins.D0
-            },
-            {
-                text: 'D1',
-                value: Pins.D1
-            },
-            {
-                text: 'D2',
-                value: Pins.D2
-            },
-            {
-                text: 'D3',
+                text: '3',
                 value: Pins.D3
             },
             {
-                text: 'D4',
-                value: Pins.D4
-            },
-            {
-                text: 'D5',
+                text: '5',
                 value: Pins.D5
+            },
+            {
+                text: '6',
+                value: Pins.D6
+            },
+            {
+                text: '9',
+                value: Pins.D9
+            },
+            {
+                text: '10',
+                value: Pins.D10
+            },
+            {
+                text: '11',
+                value: Pins.D11
             }
         ];
     }
@@ -308,19 +325,11 @@ class OpenBlockMakeyMakeyDevice {
     get INTERRUPT_PINS_MENU () {
         return [
             {
-                text: 'D0',
-                value: Pins.D0
-            },
-            {
-                text: 'D1',
-                value: Pins.D1
-            },
-            {
-                text: 'D2',
+                text: '2',
                 value: Pins.D2
             },
             {
-                text: 'D3',
+                text: '3',
                 value: Pins.D3
             }
         ];
@@ -329,19 +338,35 @@ class OpenBlockMakeyMakeyDevice {
     get INTERRUP_MODE_MENU () {
         return [
             {
-                text: 'rising edge',
+                text: formatMessage({
+                    id: 'arduinoUno.InterrupModeMenu.risingEdge',
+                    default: 'rising edge',
+                    description: 'label for rising edge interrup'
+                }),
                 value: InterrupMode.Rising
             },
             {
-                text: 'falling edge',
+                text: formatMessage({
+                    id: 'arduinoUno.InterrupModeMenu.fallingEdge',
+                    default: 'falling edge',
+                    description: 'label for falling edge interrup'
+                }),
                 value: InterrupMode.Falling
             },
             {
-                text: 'change edge',
+                text: formatMessage({
+                    id: 'arduinoUno.InterrupModeMenu.changeEdge',
+                    default: 'change edge',
+                    description: 'label for change edge interrup'
+                }),
                 value: InterrupMode.Change
             },
             {
-                text: 'low',
+                text: formatMessage({
+                    id: 'arduinoUno.InterrupModeMenu.low',
+                    default: 'low',
+                    description: 'label for low interrup'
+                }),
                 value: InterrupMode.Low
             }
         ];
@@ -442,8 +467,8 @@ class OpenBlockMakeyMakeyDevice {
          */
         this.runtime = runtime;
 
-        // Create a new Arduino makeymakey peripheral instance
-        this._peripheral = new MakeyMakey(this.runtime, OpenBlockMakeyMakeyDevice.DEVICE_ID, originalDeviceId);
+        // Create a new Arduino uno peripheral instance
+        this._peripheral = new ArduinoUno(this.runtime, this.DEVICE_ID, originalDeviceId);
     }
 
     /**
@@ -456,7 +481,7 @@ class OpenBlockMakeyMakeyDevice {
                 name: formatMessage({
                     id: 'arduinoUno.category.pins',
                     default: 'Pins',
-                    description: 'The name of the arduino leonardo device pin category'
+                    description: 'The name of the arduino uno device pin category'
                 }),
                 color1: '#4C97FF',
                 color2: '#3373CC',
@@ -464,11 +489,11 @@ class OpenBlockMakeyMakeyDevice {
 
                 blocks: [
                     {
-                        opcode: 'setPinMode',
+                        opcode: 'pinModeSet',
                         text: formatMessage({
                             id: 'arduinoUno.pins.setPinMode',
                             default: 'set pin [PIN] mode [MODE]',
-                            description: 'makeymakey set pin mode'
+                            description: 'arduinoUno set pin mode'
                         }),
                         blockType: BlockType.COMMAND,
                         arguments: {
@@ -489,7 +514,7 @@ class OpenBlockMakeyMakeyDevice {
                         text: formatMessage({
                             id: 'arduinoUno.pins.setDigitalOutput',
                             default: 'set digital pin [PIN] out [LEVEL]',
-                            description: 'makeymakey set digital pin out'
+                            description: 'arduinoUno set digital pin out'
                         }),
                         blockType: BlockType.COMMAND,
                         arguments: {
@@ -511,7 +536,7 @@ class OpenBlockMakeyMakeyDevice {
                         text: formatMessage({
                             id: 'arduinoUno.pins.setPwmOutput',
                             default: 'set pwm pin [PIN] out [OUT]',
-                            description: 'makeymakey set pwm pin out'
+                            description: 'arduinoUno set pwm pin out'
                         }),
                         blockType: BlockType.COMMAND,
                         arguments: {
@@ -532,7 +557,7 @@ class OpenBlockMakeyMakeyDevice {
                         text: formatMessage({
                             id: 'arduinoUno.pins.readDigitalPin',
                             default: 'read digital pin [PIN]',
-                            description: 'makeymakey read digital pin'
+                            description: 'arduinoUno read digital pin'
                         }),
                         blockType: BlockType.BOOLEAN,
                         arguments: {
@@ -548,7 +573,7 @@ class OpenBlockMakeyMakeyDevice {
                         text: formatMessage({
                             id: 'arduinoUno.pins.readAnalogPin',
                             default: 'read analog pin [PIN]',
-                            description: 'makeymakey read analog pin'
+                            description: 'arduinoUno read analog pin'
                         }),
                         blockType: BlockType.REPORTER,
                         arguments: {
@@ -566,18 +591,18 @@ class OpenBlockMakeyMakeyDevice {
                         text: formatMessage({
                             id: 'arduinoUno.pins.setServoOutput',
                             default: 'set servo pin [PIN] out [OUT]',
-                            description: 'makeymakey set servo pin out'
+                            description: 'arduinoUno set servo pin out'
                         }),
                         blockType: BlockType.COMMAND,
                         arguments: {
                             PIN: {
                                 type: ArgumentType.STRING,
-                                menu: 'servoPins',
+                                menu: 'pwmPins',
                                 defaultValue: Pins.D3
                             },
                             OUT: {
-                                type: ArgumentType.ANGLE,
-                                defaultValue: '0'
+                                type: ArgumentType.HALF_ANGLE,
+                                defaultValue: '90'
                             }
                         }
                     },
@@ -588,7 +613,7 @@ class OpenBlockMakeyMakeyDevice {
                         text: formatMessage({
                             id: 'arduinoUno.pins.attachInterrupt',
                             default: 'attach interrupt pin [PIN] mode [MODE] executes',
-                            description: 'makeymakey attach interrupt'
+                            description: 'arduinoUno attach interrupt'
                         }),
                         blockType: BlockType.CONDITIONAL,
                         arguments: {
@@ -611,7 +636,7 @@ class OpenBlockMakeyMakeyDevice {
                         text: formatMessage({
                             id: 'arduinoUno.pins.detachInterrupt',
                             default: 'detach interrupt pin [PIN]',
-                            description: 'makeymakey detach interrupt'
+                            description: 'arduinoUno detach interrupt'
                         }),
                         blockType: BlockType.COMMAND,
                         arguments: {
@@ -641,9 +666,6 @@ class OpenBlockMakeyMakeyDevice {
                     pwmPins: {
                         items: this.PWM_PINS_MENU
                     },
-                    servoPins: {
-                        items: this.SERVO_PINS_MENU
-                    },
                     interruptPins: {
                         items: this.INTERRUPT_PINS_MENU
                     },
@@ -657,7 +679,7 @@ class OpenBlockMakeyMakeyDevice {
                 name: formatMessage({
                     id: 'arduinoUno.category.serial',
                     default: 'Serial',
-                    description: 'The name of the arduino leonardo device serial category'
+                    description: 'The name of the arduino uno device serial category'
                 }),
                 color1: '#9966FF',
                 color2: '#774DCB',
@@ -669,7 +691,7 @@ class OpenBlockMakeyMakeyDevice {
                         text: formatMessage({
                             id: 'arduinoUno.serial.serialBegin',
                             default: 'serial begin baudrate [VALUE]',
-                            description: 'makeymakey serial begin'
+                            description: 'arduinoUno serial begin'
                         }),
                         blockType: BlockType.COMMAND,
                         arguments: {
@@ -686,7 +708,7 @@ class OpenBlockMakeyMakeyDevice {
                         text: formatMessage({
                             id: 'arduinoUno.serial.serialPrint',
                             default: 'serial print [VALUE] [EOL]',
-                            description: 'makeymakey serial print'
+                            description: 'arduinoUno serial print'
                         }),
                         blockType: BlockType.COMMAND,
                         arguments: {
@@ -707,9 +729,10 @@ class OpenBlockMakeyMakeyDevice {
                         text: formatMessage({
                             id: 'arduinoUno.serial.serialAvailable',
                             default: 'serial available data length',
-                            description: 'makeymakey serial available data length'
+                            description: 'arduinoUno serial available data length'
                         }),
                         blockType: BlockType.REPORTER,
+                        disableMonitor: true,
                         programMode: [ProgramModeType.UPLOAD]
                     },
                     {
@@ -717,9 +740,10 @@ class OpenBlockMakeyMakeyDevice {
                         text: formatMessage({
                             id: 'arduinoUno.serial.serialReadData',
                             default: 'serial read data',
-                            description: 'makeymakey serial read data'
+                            description: 'arduinoUno serial read data'
                         }),
                         blockType: BlockType.REPORTER,
+                        disableMonitor: true,
                         programMode: [ProgramModeType.UPLOAD]
                     }
                 ],
@@ -748,7 +772,7 @@ class OpenBlockMakeyMakeyDevice {
                         text: formatMessage({
                             id: 'arduinoUno.data.dataMap',
                             default: 'map [DATA] from ([ARG0], [ARG1]) to ([ARG2], [ARG3])',
-                            description: 'makeymakey data map'
+                            description: 'arduinoUno data map'
                         }),
                         blockType: BlockType.REPORTER,
                         arguments: {
@@ -775,13 +799,12 @@ class OpenBlockMakeyMakeyDevice {
                         },
                         programMode: [ProgramModeType.UPLOAD]
                     },
-                    '---',
                     {
                         opcode: 'dataConstrain',
                         text: formatMessage({
                             id: 'arduinoUno.data.dataConstrain',
                             default: 'constrain [DATA] between ([ARG0], [ARG1])',
-                            description: 'makeymakey data constrain'
+                            description: 'arduinoUno data constrain'
                         }),
                         blockType: BlockType.REPORTER,
                         arguments: {
@@ -800,12 +823,13 @@ class OpenBlockMakeyMakeyDevice {
                         },
                         programMode: [ProgramModeType.UPLOAD]
                     },
+                    '---',
                     {
                         opcode: 'dataConvert',
                         text: formatMessage({
                             id: 'arduinoUno.data.dataConvert',
                             default: 'convert [DATA] to [TYPE]',
-                            description: 'makeymakey data convert'
+                            description: 'arduinoUno data convert'
                         }),
                         blockType: BlockType.REPORTER,
                         arguments: {
@@ -826,7 +850,7 @@ class OpenBlockMakeyMakeyDevice {
                         text: formatMessage({
                             id: 'arduinoUno.data.dataConvertASCIICharacter',
                             default: 'convert [DATA] to ASCII character',
-                            description: 'makeymakey data convert to ASCII character'
+                            description: 'arduinoUno data convert to ASCII character'
                         }),
                         blockType: BlockType.REPORTER,
                         arguments: {
@@ -842,7 +866,7 @@ class OpenBlockMakeyMakeyDevice {
                         text: formatMessage({
                             id: 'arduinoUno.data.dataConvertASCIINumber',
                             default: 'convert [DATA] to ASCII nubmer',
-                            description: 'makeymakey data convert to ASCII nubmer'
+                            description: 'arduinoUno data convert to ASCII nubmer'
                         }),
                         blockType: BlockType.REPORTER,
                         arguments: {
@@ -910,6 +934,16 @@ class OpenBlockMakeyMakeyDevice {
     readAnalogPin (args) {
         return this._peripheral.readAnalogPin(args.PIN);
     }
+
+    /**
+     * Set servo out put.
+     * @param {object} args - the block's arguments.
+     * @return {Promise} - a Promise that resolves after the set servo out value is done.
+     */
+    setServoOutput (args) {
+        this._peripheral.setServoOutput(args.PIN, args.OUT);
+        return Promise.resolve();
+    }
 }
 
-module.exports = OpenBlockMakeyMakeyDevice;
+module.exports = OpenBlockArduinoUnoDevice;
